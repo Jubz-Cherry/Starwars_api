@@ -8,6 +8,11 @@ from .repository import get_planet_by_id
 
 router = APIRouter(prefix="/planets", tags=["Planets"])
 
+@router.get('/allplanets', response_model=list[PlanetResponse])
+def get_all_planets(db: Session = Depends(get_db)):
+    planets = db.query(Planet).all()
+    return planets
+
 @router.get('/favorites', response_model=list[PlanetResponse])
 def get_favorites(
     user_id: int = Depends(verify_token),
@@ -30,17 +35,6 @@ def get_favorites(
         )
 
     return favorites
-
-@router.get('/{planets_id}', response_model= PlanetResponse)
-def get_planet(
-    planet_id: int, 
-    db: Session = Depends(get_db)
-    ):
-    planet = db.query(Planet).filter(Planet.id == planet_id).first()
-
-    if not planet:
-        raise HTTPException(status_code=404, detail='Planet not found')
-    return planet
 
 @router.post('/{planets_id}/favorite')
 def favorite_planet(

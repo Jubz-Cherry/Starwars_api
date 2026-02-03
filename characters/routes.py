@@ -8,14 +8,10 @@ from .repository import get_character_by_id
 
 router = APIRouter(prefix="/character", tags=["Character"])
 
-@router.get('/character/{character_id}', response_model=CharacterResponse)
-def get_character(character_id: int, db: Session = Depends(get_db)):
-    character = db.query(Character).filter(Character.id == character_id).first()
-
-    if not character:
-        raise HTTPException(status_code=404, detail='Character not found')
-
-    return character
+@router.get('/allcharacters', response_model=list[CharacterResponse])
+def get_all_characters(db: Session = Depends(get_db)):
+    characters = db.query(Character).all()
+    return characters
 
 @router.get('/curtidos', response_model=list[CharacterResponse])
 def get_favorite_characters(

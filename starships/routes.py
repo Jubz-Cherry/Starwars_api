@@ -8,8 +8,12 @@ from starships.schema import StarshipResponse
 from models import Starship
 from .repository import get_starship_by_id
 
-
 router = APIRouter(prefix="/starships", tags=["Starships"])
+
+@router.get('/allstarships', response_model=list[StarshipResponse])
+def get_all_starships(db: Session = Depends(get_db)):
+    starships = db.query(Starship).all()
+    return starships
 
 @router.get('/favorites', response_model=list[StarshipResponse])
 def get_favorites(
@@ -33,18 +37,6 @@ def get_favorites(
         )
 
     return favorites
-
-@router.get('/{starship_id}', response_model= StarshipResponse)
-def get_starship(
-    starship_id: int, 
-    db: Session = Depends(get_db)
-    ):
-    starship = get_starship_by_id(db, starship_id)
-
-    if not starship:
-        raise HTTPException(status_code=404, detail='Starship not found')
-    return starship
-
 
 @router.post('/{starship_id}/favorite')
 def favorite_starship(

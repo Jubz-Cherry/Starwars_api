@@ -9,6 +9,11 @@ from .repository import get_species_by_id
 
 router = APIRouter(prefix="/species", tags=["Species"])
 
+@router.get('/allspecies', response_model=list[SpeciesResponse])
+def get_all_species(db: Session = Depends(get_db)):
+    species = db.query(Species).all()
+    return species
+
 @router.get('/favorites', response_model=list[SpeciesResponse])
 def get_favorites(
     user_id: int = Depends(verify_token),
@@ -31,17 +36,6 @@ def get_favorites(
         )
 
     return favorites
-
-@router.get('/{species_id}', response_model= SpeciesResponse)
-def get_species(
-    species_id: int, 
-    db: Session = Depends(get_db)
-    ):
-    species = db.query(Species).filter(Species.id == species_id).first()
-
-    if not species:
-        raise HTTPException(status_code=404, detail='Species not found')
-    return species
 
 @router.post('/{species_id}/favorite')
 def favorite_species(

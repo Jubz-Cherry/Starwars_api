@@ -119,3 +119,18 @@ class Starship(Base):
     films = Column(JSON, nullable=False, default=list)
 
     url = Column(String, unique=True, nullable=False)
+
+class FilmCharacter(Base):
+    __tablename__ = "film_characterr"
+
+    film_id = Column(
+        Integer,
+        ForeignKey("films.id", ondelete="CASCADE"),
+        primary_key=True
+    )
+
+    character_id = Column(
+        Integer,
+        ForeignKey("characterr.id", ondelete="CASCADE"),
+        primary_key=True
+    )

@@ -6,18 +6,56 @@ from models import UserFavorite
 from .repository import get_film_by_id
 from .schema import FilmSchema
 from app.dependencies import get_db
+from models import Film, Character, FilmCharacter
+
 
 router = APIRouter(prefix="/films", tags=["Films"])
 
-@router.get("/", response_model=FilmSchema)
-def get_film(
-    film_id: int,
+@router.get('/allfilms', response_model=list[FilmSchema])
+def get_all_films(db: Session = Depends(get_db)):
+    films = db.query(Film).all()
+    return films
+
+@router.get("/search/by-character", response_model=list[FilmSchema])
+def find_films_by_character(
+    character_name: str,
+    user_id: int = Depends(verify_token),
     db: Session = Depends(get_db)
 ):
-    film = get_film_by_id(db, film_id)
-    if not film:
-        raise HTTPException(status_code=404, detail="Film not found")
-    return film
+    films = (
+        db.query(Film)
+        .join(FilmCharacter)
+        .join(Character)
+        .filter(Character.name.ilike(f"%{character_name}%"))
+        .all()
+    )
+
+    if not films:
+        raise HTTPException(404, "No films found for this character")
+
+    return films
+
+@router.get("/search/by-character", response_model=list[FilmSchema])
+def find_films_by_character(
+    character_name: str,
+    user_id: int = Depends(verify_token),
+    db: Session = Depends(get_db)
+):
+    films = (
+        db.query(Film)
+        .join(FilmCharacter)
+        .join(Character)
+        .filter(Character.name.ilike(f"%{character_name}%"))
+        .all()
+    )
+
+    if not films:
+        raise HTTPException(
+            status_code=404,
+            detail="No films found for this character"
+        )
+
+    return films
 
 @router.get('/curtidos', response_model=list[FilmSchema])
 def get_favorites(
