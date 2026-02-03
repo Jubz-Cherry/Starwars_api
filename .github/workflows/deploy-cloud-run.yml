@@ -1,0 +1,36 @@
+name: StarWarsAPI | Git to Cloud Run
+
+on:
+  push:
+    branches: ['main']
+jobs:
+  deploy:
+    name: Setup Gcloud Account
+    runs-on: ubuntu-latest
+    environment: hw-prod
+    env:
+      SERVICE_NAME: star-wars
+      IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/star-wars:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - uses: google-github-actions/auth@v2
+        name: Authenticate gcloud
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - uses: google-github-actions/setup-gcloud@v2
+        name: Setup gcloud
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME .
+
+      - name: Push Docker image
+        run: docker push $IMAGE_NAME
+
+      - name: Deploy Docker image to Cloud Run
+        run: gcloud run deploy $SERVICE_NAME --image $IMAGE_NAME --region southamerica-east1 --min-instances 0 --max-instances 1 --platform managed --allow-unauthenticated
