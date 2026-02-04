@@ -1,13 +1,22 @@
+import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker 
+from sqlalchemy.orm import declarative_base, sessionmaker
+from dotenv import load_dotenv
 
-DATABASE_URL = "postgresql://postgres:102011@localhost:5432/starwars_api"
+# carrega o .env ANTES de ler qualquer variável
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL não encontrada no .env")
 
 engine = create_engine(DATABASE_URL, echo=True)
 
 Base = declarative_base()
-# base para os modelos (tabelas)
 
-SessionLocal = sessionmaker(autocommit= False, autoflush=False, bind=engine)
-
-# SessionLocal é usada para criar sessões (transações) com o banco
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
