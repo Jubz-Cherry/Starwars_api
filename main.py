@@ -17,12 +17,16 @@ from starships.routes import router as starships_routes
 app = FastAPI()
 
 #registram “sub-rotas” organizadas em arquivos separados
-app.include_router(register_router)
-app.include_router(films_router)
-app.include_router(characters_routes)
-app.include_router(species_routes)
-app.include_router(planets_routes)
-app.include_router(starships_routes)
+app.include_router(register_router, prefix="/auth", tags=["Auth"])
+app.include_router(films_router, prefix="/films", tags=["Films"])
+app.include_router(characters_routes, prefix="/character", tags=["Character"])
+app.include_router(species_routes, prefix="/species", tags=["Species"])
+app.include_router(planets_routes, prefix="/planets", tags=["Planets"])
+app.include_router(starships_routes, prefix="/starships", tags=["Starships"])
+
+@app.get("/")
+def health_check():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8000, host="0.0.0.0")

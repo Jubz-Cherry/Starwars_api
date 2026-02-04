@@ -13,7 +13,7 @@ from app.dependencies import get_db
 from acess.schema import TokenSchema 
 from acess.create_access import criar_token, verify_token 
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter()
 
 @router.post("/register", response_model= UserSchema)
 def register_user(

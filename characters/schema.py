@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class CharactersSchema(BaseModel):
     id: int
@@ -21,5 +21,4 @@ class CharacterResponse(BaseModel):
     films: List[str]
     species: List[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

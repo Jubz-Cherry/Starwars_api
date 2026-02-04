@@ -8,7 +8,7 @@ from starships.schema import StarshipResponse
 from models import Starship
 from .repository import get_starship_by_id
 
-router = APIRouter(prefix="/starships", tags=["Starships"])
+router = APIRouter()
 
 @router.get('/allstarships', response_model=list[StarshipResponse])
 def get_all_starships(db: Session = Depends(get_db)):

@@ -7,7 +7,7 @@ from species.schema import SpeciesResponse
 from models import Species, UserFavorite
 from .repository import get_species_by_id
 
-router = APIRouter(prefix="/species", tags=["Species"])
+router = APIRouter()
 
 @router.get('/allspecies', response_model=list[SpeciesResponse])
 def get_all_species(db: Session = Depends(get_db)):

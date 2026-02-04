@@ -9,30 +9,11 @@ from app.dependencies import get_db
 from models import Film, Character, FilmCharacter
 
 
-router = APIRouter(prefix="/films", tags=["Films"])
+router = APIRouter()
 
 @router.get('/allfilms', response_model=list[FilmSchema])
 def get_all_films(db: Session = Depends(get_db)):
     films = db.query(Film).all()
-    return films
-
-@router.get("/search/by-character", response_model=list[FilmSchema])
-def find_films_by_character(
-    character_name: str,
-    user_id: int = Depends(verify_token),
-    db: Session = Depends(get_db)
-):
-    films = (
-        db.query(Film)
-        .join(FilmCharacter)
-        .join(Character)
-        .filter(Character.name.ilike(f"%{character_name}%"))
-        .all()
-    )
-
-    if not films:
-        raise HTTPException(404, "No films found for this character")
-
     return films
 
 @router.get("/search/by-character", response_model=list[FilmSchema])

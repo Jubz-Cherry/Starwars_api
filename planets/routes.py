@@ -6,7 +6,7 @@ from planets.schema import PlanetResponse
 from models import Planet, UserFavorite
 from .repository import get_planet_by_id
 
-router = APIRouter(prefix="/planets", tags=["Planets"])
+router = APIRouter()
 
 @router.get('/allplanets', response_model=list[PlanetResponse])
 def get_all_planets(db: Session = Depends(get_db)):

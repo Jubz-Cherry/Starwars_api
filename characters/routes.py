@@ -6,7 +6,7 @@ from characters.schema import CharacterResponse
 from models import Character, UserFavorite
 from .repository import get_character_by_id
 
-router = APIRouter(prefix="/character", tags=["Character"])
+router = APIRouter()
 
 @router.get('/allcharacters', response_model=list[CharacterResponse])
 def get_all_characters(db: Session = Depends(get_db)):
