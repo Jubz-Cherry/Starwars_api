@@ -1,11 +1,13 @@
 from dotenv import load_dotenv 
 from pathlib import Path
 
+
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / '.env')
 
 from fastapi import FastAPI, Depends
 import uvicorn  
+import os 
 from films.routes import router as films_router
 from characters.routes import router as characters_routes
 from app.dependencies import get_db
@@ -29,5 +31,5 @@ def health_check():
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, port=8000, host="0.0.0.0")
-    
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
