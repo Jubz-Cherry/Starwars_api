@@ -2,8 +2,8 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+DATABASE_URL = None
 
-# escolhe qual DB usar
 USE_CLOUD = os.getenv("USE_CLOUD", "false").lower() == "true"
 
 if USE_CLOUD:
@@ -11,20 +11,19 @@ if USE_CLOUD:
 else:
     DATABASE_URL = os.getenv("DATABASE_URL_LOCAL")
 
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL não encontrada no .env")
+engine = None
+SessionLocal = None
 
-print("DATABASE_URL:", repr(DATABASE_URL))
+if DATABASE_URL:
+    engine = create_engine(
+        DATABASE_URL,
+        echo=os.getenv("ENV", "dev") == "dev"
+    )
 
-engine = create_engine(
-    DATABASE_URL,
-    echo=os.getenv("ENV", "dev") == "dev"
-)
+    SessionLocal = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=engine
+    )
 
 Base = declarative_base()
-
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
